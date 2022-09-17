@@ -3,7 +3,7 @@ package com.example.pokedex.data
 import com.google.gson.annotations.SerializedName
 
 data class PokeResponse(
-    @SerializedName("name") var results: ArrayList<Results?>
+    @SerializedName("results") var results: ArrayList<Results?>
 )
 
 data class Results(

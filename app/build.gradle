@@ -1,9 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'androidx.navigation.safeargs'
 }
-
-
 
 android {
     compileSdk 32
@@ -56,5 +55,7 @@ dependencies {
 
     //Corutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
+
+
 
 }

@@ -18,5 +18,14 @@
         android:id="@+id/pokeDetailsFragment"
         android:name="com.example.pokedex.details.PokeDetailsFragment"
         android:label="fragment_poke_details"
-        tools:layout="@layout/fragment_poke_details" />
+        tools:layout="@layout/fragment_poke_details" >
+        <argument
+            android:name="pokeName"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="pokeUrl"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

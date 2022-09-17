@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pokedex.data.PokeApiService
 import com.example.pokedex.data.Results
@@ -21,10 +22,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 private lateinit var binding: FragmentPokeListBinding
 private lateinit var adapter: PokeAdapter
-private var pokeImages = ArrayList<Results?>()
+private var pokeImages = mutableListOf<Results?>()
 
 
 class PokeListFragment : Fragment() {
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,17 +45,18 @@ class PokeListFragment : Fragment() {
 
     }
 
+
     @SuppressLint("NotifyDataSetChanged")
     private fun searchByName() {
         CoroutineScope(Dispatchers.IO).launch {
             val call = getRetrofit().create(PokeApiService::class.java)
-                .getPokemonList("pokemon/?offset=20&limit=20")
+                .getPokemonList("pokemon/?offset=20&limit=5")
             val pokeResponse = call.body()?.results
             activity?.runOnUiThread {
                 if (pokeResponse != null) {
                     pokeImages = pokeResponse
                     adapter.notifyDataSetChanged()
-                    enviarPokemons(pokeImages)
+                    sendPokmemons(pokeImages)
 
                 } else {
                     showError()
@@ -63,14 +66,14 @@ class PokeListFragment : Fragment() {
         }
     }
 
+
     private fun showError() {
         Toast.makeText(activity, "Something has happend", Toast.LENGTH_SHORT).show()
-        Log.i("Al palo", String())
     }
 
 
     private fun initRecyclerView() {
-        adapter = PokeAdapter(pokeImages)
+        adapter = PokeAdapter(pokeImages, ::listener)
         binding.rvPokeList.layoutManager = LinearLayoutManager(activity)
         binding.rvPokeList.adapter = adapter
         Log.i("Listado de pokemons", pokeImages.toString())
@@ -84,7 +87,21 @@ class PokeListFragment : Fragment() {
             .build()
     }
 
-    private fun enviarPokemons(pokemons: ArrayList<Results?>) {
-        adapter.recibirPokemons(pokemons)
+
+    private fun sendPokmemons(pokemons: MutableList<Results?>) {
+        adapter.getPokemons(pokemons)
     }
+
+
+    private fun listener(pokemons: Results?) {
+        val pokeName = pokemons?.name
+        val pokeUrl = pokemons?.url
+        findNavController().navigate(
+            PokeListFragmentDirections.actionPokeListFragmentToPokeDetailsFragment(
+                pokeName,
+                pokeUrl
+            )
+        )
+    }
+
 }

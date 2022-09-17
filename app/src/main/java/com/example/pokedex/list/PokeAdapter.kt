@@ -1,6 +1,7 @@
 package com.example.pokedex.list
 
-import android.util.Log
+
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,10 @@ import com.example.pokedex.data.Results
 import com.example.pokedex.databinding.ItemPokemonBinding
 import com.squareup.picasso.Picasso
 
-class PokeAdapter(var pokemons: ArrayList<Results?>) :
+class PokeAdapter(
+    private var pokemons: MutableList<Results?>,
+    private val pokeDetail: (Results?) -> Unit
+) :
     RecyclerView.Adapter<PokeAdapter.ViewHolder>() {
 
 
@@ -18,11 +22,15 @@ class PokeAdapter(var pokemons: ArrayList<Results?>) :
 
         private val binding = ItemPokemonBinding.bind(view)
 
-        fun bind(image: Results) {
-            Picasso.get().load(image.url).into(binding.ivPokeImage)
-            binding.ivPokeImage
+        fun bind(image: Results?) {
 
-            binding.tvPokeText.text = image.name
+            binding.tvPokeText.text = image?.name
+
+            var numberPok = image?.url?.drop(34)
+            numberPok = numberPok?.dropLast(1)
+            Picasso.get()
+                .load("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$numberPok.png")
+                .into(binding.ivPokeImage)
         }
     }
 
@@ -32,17 +40,21 @@ class PokeAdapter(var pokemons: ArrayList<Results?>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item: String = pokemons[position].name
         val pokemon = pokemons[position]
         holder.bind(pokemon)
+        holder.itemView.setOnClickListener {
+            pokeDetail(pokemon)
+
+        }
     }
 
     override fun getItemCount(): Int = pokemons.size
-    fun recibirPokemons(pokemons: ArrayList<Results?>) {
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun getPokemons(pokemons: MutableList<Results?>) {
         this.pokemons = pokemons
         notifyDataSetChanged()
-
-        Log.i("Listado de adapter", pokemons.toString())
     }
 }
+
 
